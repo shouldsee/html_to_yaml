@@ -1,0 +1,687 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+        <meta charset="utf-8" />
+        <title>How to fail your deadline? - Starting learning MySQL thinking you can master it in one day! // 想超时完成任务？来学MySQL就好！</title>
+        <link rel="stylesheet" href="/theme/css/main.css" />
+        <link href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate" title="A Pelican Blog Atom Feed" />
+</head>
+
+<body id="index" class="home">
+        <header id="banner" class="body">
+                <h1><a href="/">A Pelican Blog </a></h1>
+                <nav><ul>
+                    <li><a href="/category/list.html">list</a></li>
+                    <li><a href="/category/maths.html">maths</a></li>
+                    <li><a href="/category/pages.html">pages</a></li>
+                    <li class="active"><a href="/category/program.html">program</a></li>
+                    <li><a href="/category/story.html">story</a></li>
+                    <li><a href="/category/thoughts.html">thoughts</a></li>
+                </ul></nav>
+        </header><!-- /#banner -->
+<section id="content" class="body">
+  <article>
+    <header>
+      <h1 class="entry-title">
+        <a href="/how-to-fail-your-deadline-starting-learning-mysql-thinking-you-can-master-it-in-one-day-xiang-chao-shi-wan-cheng-ren-wu-lai-xue-mysqljiu-hao.html" rel="bookmark"
+           title="Permalink to How to fail your deadline? - Starting learning MySQL thinking you can master it in one day! // 想超时完成任务？来学MySQL就好！">How to fail your deadline? - Starting learning MySQL thinking you can master it in one day! // 想超时完成任务？来学MySQL就好！</a></h1>
+    </header>
+
+    <div class="entry-content">
+<footer class="post-info">
+        <abbr class="published" title="2017-07-10T18:55:00+00:00">
+                Published: 一 10 七月 2017
+        </abbr>
+
+<p>In <a href="/category/program.html">program</a>.</p>
+<p>tags: <a href="/tag/program.html">program</a> <a href="/tag/english.html">english</a> </p>
+</footer><!-- /.post-info -->      <p>First published <a href="http://orengogroup.info/2017/07/10/how-to-fail-your-deadline-starting-learning-mysql-and-think-you-can-master-it-in-one-day/">here</a>.
+[#### 1. How to fail your deadline? - Starting learning MySQL thinking you can master it in one day!]</p>
+<p>Recently, I touched upon MySQL because I wanted it to be the backend for my incoming Django-based data browser. After 4 days of prolonged fiddling I finally manage to make some notes of its functionality. It is very fast, but equally importantly, very different from Python! The other lesson is that one should allocate enough time for learning when starting a new language (depending on <a href="https://en.wikipedia.org/wiki/Single-linkage_clustering">single linkage distance</a>)</p>
+<p>Today's blog will go through:
+1. Loading a table into MySQL, be it fixed-width or regularly delimited.
+2. Create relations between entries.
+3. How to deal with errors, and fix your relationship:</p>
+<!--more-->
+
+<h4>Overview:</h4>
+<p>MySQL is a SQL(standard query language), that is specialised for:
+1. database management: To create and maintain the structure of a database
+2. Data I/O: Retrieval and deposition of data.</p>
+<p>These functions all look good, so I went on firing a "<code>mysql</code>" shell to try out all different commands it provides, including <code>SELECT</code>, <code>SHOW</code>, <code>DROP</code>, <code>LOAD DATA</code>. </p>
+<h4>1. Loading a table into MySQL.</h4>
+<p>The original goal was to load a fixed-width flatfile into MySQL to form the original dataset. I used regex to transform the flatfile into a delimited form and load it with the command:</p>
+<div class="highlight"><pre><span></span><span class="c1">## Engage a database before doing anything</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">TEST</span><span class="p">;</span>
+<span class="k">USE</span> <span class="n">TEST</span><span class="p">;</span>
+
+<span class="c1">## Reset the table</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">s35</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">table</span> <span class="nf">s35</span><span class="p">(</span>
+   <span class="n">domain_id</span> <span class="kt">char</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+   <span class="n">Class</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">## Note Capital &quot;C&quot; is used to avoid clash with python &quot;class()&quot; keyword</span>
+   <span class="n">arch</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">topo</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">homsf</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s35</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s60</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s95</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s100</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s100_seqcnt</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">domain_length</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">resolution</span> <span class="kt">float</span><span class="p">);</span>
+
+
+<span class="c1">#### For a regularly delimited file.</span>
+<span class="k">LOAD</span> <span class="n">DATA</span> <span class="n">LOCAL</span> <span class="k">INFILE</span> <span class="s1">&#39;/home/shouldsee/Documents/repos/cathdb/cath-domain-list-S35.txt&#39;</span>
+<span class="k">INTO</span> <span class="k">TABLE</span> <span class="n">s35</span> 
+<span class="n">FIELDS</span> <span class="k">TERMINATED</span> <span class="k">by</span> <span class="s1">&#39;     &#39;</span> <span class="k">lines</span> <span class="k">terminated</span> <span class="k">by</span> <span class="s1">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="c1">#### If however you got fixed-width CATH CLF.</span>
+<span class="k">LOAD</span> <span class="n">DATA</span> <span class="n">LOCAL</span> <span class="k">INFILE</span> <span class="s1">&#39;/home/shouldsee/Documents/repos/cathdb/cath-domain-list-S35-v4_1_0.txt&#39;</span> 
+<span class="k">INTO</span> <span class="k">TABLE</span> <span class="nf">s35</span>
+<span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">)</span>
+<span class="kt">SET</span> <span class="n">domain_id</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)),</span>
+    <span class="n">Class</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">13</span><span class="p">)),</span>
+    <span class="n">arch</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">19</span><span class="p">)),</span>
+    <span class="n">topo</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">)),</span>
+    <span class="n">homsf</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">31</span><span class="p">)),</span>
+    <span class="n">s35</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">37</span><span class="p">)),</span>
+    <span class="n">s60</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">43</span><span class="p">)),</span>
+    <span class="n">s95</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">44</span><span class="p">,</span><span class="mi">49</span><span class="p">)),</span>
+    <span class="n">s100</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">55</span><span class="p">)),</span>
+    <span class="n">s100_seqcnt</span><span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">56</span><span class="p">,</span><span class="mi">61</span><span class="p">)),</span>
+    <span class="n">domain_length</span><span class="o">=</span><span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">67</span><span class="p">)),</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">68</span><span class="p">,</span><span class="mi">73</span><span class="p">));</span>
+
+<span class="k">SELECT</span> <span class="n">domain_id</span><span class="p">,</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">s35</span> <span class="k">from</span> <span class="n">s35</span> <span class="k">limit</span> <span class="mi">5</span><span class="p">;</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">domain_id</span><span class="p">,</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">s35</span> <span class="k">from</span> <span class="n">s35</span> <span class="k">limit</span> <span class="mi">5</span><span class="p">;</span> 
+<span class="o">+----------+-------+------+------+-------+------+</span>
+<span class="o">|</span> <span class="n">domain_id</span> <span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">s35</span>  <span class="o">|</span>
+<span class="o">+----------+-------+------+------+-------+------+</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">oaiA00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">3</span><span class="n">frhA01</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">oksA00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">3</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">4</span><span class="n">un2B00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">4</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">cukA03</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">5</span> <span class="o">|</span>
+<span class="o">+----------+-------+------+------+-------+------+</span>
+</pre></div>
+
+
+<ul>
+<li>Note that raw <a href="http://download.cathdb.info/cath/releases/latest-release/cath-classification-data/README-cath-list-file-format.txt">CATH CLF files</a> are fixed-width.</li>
+<li>In case you are not familiar with the organisation of CATH, each "Class" node branches into "Architecture(arch)" children nodes, which in turn branches into "Topology(topo)" children nodes, so on and so forth. <a href="http://wiki.cathdb.info/wiki-beta/doku.php?id=faq">CATH FAQ</a></li>
+<li>Original "cath-domain-list-S35.txt" can be downloaded from <a href="http://download.cathdb.info/cath/releases/all-releases/v4_1_0/cath-classification-data/cath-domain-list-S35-v4_1_0.txt">CATH</a></li>
+</ul>
+<p>Now we have a MySQL table containing all S35 representative structures (S35rep), which allows me to filter the table with some criteria. such as:
+1. "<code>SELECT * FROM s35 WHERE Class=1;</code>" : This will give you all Class 1 S35rep's (You should get 4645 rows).
+2. "<code>SELECT * FROM s35 WHERE resolution&lt;1.0;</code>" : This should give all s35rep with a structual resolution &lt; 1.0 (183 rows)</p>
+<h4>2. Create relations between entries.</h4>
+<p>But there is something I can not fulfill using this structure: Some homologous family (homsf) will have a large number of s35rep (&gt;100) whereas most homsf's will only have several (&lt;5). So it is desirable to filter out the big homsf's only. For example, to count the s35rep in 1.10.8.10, just issue </p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="p">(</span><span class="k">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">)</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+
+
+<p>And it should return a table saying you got 53 entries, which should all be s35rep's. The problem is: <strong>where should we store this number?</strong> We can certainly add a "s35_seqcnt" column into the "s35" table and set all s35rep in (1,10,8,10) to have a "s35_seqcnt" of 53, but careful readers must feel dangerous with this approach, reasons are:
+1. All entries in "s35" table represent s35rep nodes. From this perspective, any s35rep should only have a s35_count of 1, which refers to itself. 
+2. Every time this number changes, (say one s35rep is removed), we will need to update all ~50 entries with the new value (say 52).</p>
+<p>Think about it, s35seq_cnt is a property of homsf, not s35rep itself. If we had a homsf node representing (1,10,8,10), we could have easily set its s35seq_cnt field to be 53, solving both problems at once. Luckily, MySQL is also known as relational database, which means it is built to store relationship. In other words, we can store not only values (e.g: integers,floats,strings), but also cursors to other entries. For this hypothetical homsf node (1,10,8,10), we can actually store a list of cursors pointing to all 53 s35rep's contained within it. </p>
+<div class="highlight"><pre><span></span><span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">homsf</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">homsf</span>
+  <span class="p">(</span><span class="n">id</span> <span class="kt">INT</span> <span class="kp">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="c1">### Set an index for cursor in the future</span>
+  <span class="n">s35_count</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">## This is new!</span>
+  <span class="n">Class</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">arch</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">topo</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">homsf</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="c1">### For homsf, we don&#39;t need index from s35 onwards, but we keep these fields to allow for easier manipulation.</span>
+  <span class="n">s35</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s60</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s95</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s100</span> <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">domain_length</span> <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">resolution</span> <span class="kt">float</span> <span class="k">DEFAULT</span> <span class="no">NULL</span>
+  <span class="p">);</span>
+
+<span class="c1">### Insert distinct entries into homsf.</span>
+<span class="c1">### Since we set &quot;id&quot; to be AUTO_INCREMENT, we don&#39;t need to assign it since it will be auto-generated</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">homsf</span> <span class="p">(</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">)</span>
+   <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span> <span class="k">FROM</span> <span class="n">s35</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Now we would have a table containing all 2737 homsf's, but we have yet to establish the relation between 'homsf' and 's35'. We will use the "id" column of homsf since it is the indexed primary key, which allows for fast lookup. We will:
+1. Create a "homsf_id" column in s35 to store its parental homsf node's id.
+2. Fill this "homsf_id" using a for loop.
+3. Add a foreign key constraint to this column. </p>
+<p>In fact, step 1,2 would suffice to specify the relation. Doing step 3 is only for maintainence purpose and constrain any future modification towards the tables, which is essentially a built-in test that every furture version of database has to pass. Though at beginning constraints is very annoying and throws many errors like:
+1. ERROR 1215 (HY000): Cannot add foreign key constraint  (Oh gosh I want to add a constraint!!! Please let me do it!!! Plz!!!)
+2. Error Code: 1452. Cannot add or update a child row: a foreign key constraint fails (Oh you evil constraint! Let go of my table!!! I need to modify it!!! I need to drop it!!! Now!!! Here!!!)
+3. ...</p>
+<h4>3. How to deal with errors, and fix your relationship:</h4>
+<p>Errors can be very, very annoying and could ruin hours and hours. However, once you understand how it works, these errors suddenly become useful indications that alert you of the potential hazard within commands you've just thrown upon MySQL. This is strictly speaking not a TDD example, since the test is not written for development but merely for maintaining the integrity of the database. Nevertheless, to understand the conept of "Test" on its own is essential to move on to the idea of TDD.</p>
+<p>Now let's implement the stated operations in MySQL.</p>
+<div class="highlight"><pre><span></span><span class="c1">### We split these ADD COLUMN commands since they might throw error if homsf_id already exists, but it would require custom procedure to avert so is not included here.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span> 
+   <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">homsf_id</span> <span class="kt">INT</span><span class="p">;</span>
+
+
+<span class="c1">### Fill s35.homsf_id with correct cursors to homsf.id</span>
+<span class="c1">### This should only be executed if every s35 can find a homsf. One way to ensure this condition is to create a fresh homsf table from s35. Other approaches with INSERT should be possible.</span>
+
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span>  <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span>
+  <span class="kt">SET</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="n">homsf</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+
+<span class="c1">### Impose the foreign key constraint.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span> 
+
+<span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">;</span> <span class="c1">### Confirm homsf does not change size</span>
+</pre></div>
+
+
+<p>It is useful to simulate a 1452 error to illustrate how to debug a foreign key.</p>
+<div class="highlight"><pre><span></span><span class="c1">### Temporarily remove the foreign key.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">DROP</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">homsf_fk</span><span class="p">;</span>
+<span class="c1">### Artificially damage the table</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">homsf</span>
+  <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="c1">###</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="kt">SET</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span>
+  <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+<span class="c1">### NEVER do this to a productive database!!</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="kt">SET</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234567</span>
+  <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>
+
+<span class="c1">### Attempt to impose the foreign key constraint.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Commands above should throw a 1452:</p>
+<div class="highlight"><pre><span></span><span class="n">ERROR</span> <span class="mi">1452</span> <span class="p">(</span><span class="mi">23000</span><span class="p">):</span> <span class="n">Cannot</span> <span class="k">add</span> <span class="k">or</span> <span class="k">update</span> <span class="n">a</span> <span class="n">child</span> <span class="n">row</span><span class="p">:</span> <span class="n">a</span> <span class="k">foreign</span> <span class="k">key</span> <span class="k">constraint</span> <span class="nf">fails</span> <span class="p">(</span><span class="ss">`TEST`</span><span class="p">.</span><span class="ss">`#sql-78c0_66a`</span><span class="p">,</span> <span class="k">CONSTRAINT</span> <span class="ss">`homsf_fk`</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="ss">`homsf_id`</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">`homsf`</span> <span class="p">(</span><span class="ss">`id`</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We can find out which key is missing with SELECT ... WHERE ...NOT IN. But note this will NOT report that homsf_id=2 has been redirected to homsf_id=1234 !!</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">homsf_id</span> <span class="k">FROM</span> <span class="n">s35</span>
+   <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span>  <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1234567</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+</pre></div>
+
+
+<p>By inspection, we found homsf_id 1 and 1234567 is not referring to any existing homsf.id, perventing us from installing a constraint. So we might consider create new homsf to accommodate these s35 entries. But wait a minute, we don't want to create new homsf that coincide with an existing homsf! We can ensure this by trying to update homsf_id according to existing homsf table.</p>
+<div class="highlight"><pre><span></span><span class="c1">#### Save the sub-table with failed keys to a temp table.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">s35</span>
+   <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span>
+
+<span class="c1">#### Dump the proposed fix into a table `temp_fix`</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_fix</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_fix</span>
+<span class="k">SELECT</span> <span class="n">s35</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+  <span class="n">homsf_id</span><span class="p">,</span>
+  <span class="n">homsf</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">fixed_homsf_id</span> <span class="k">FROM</span> <span class="n">temp</span> <span class="k">AS</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span> <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">);</span>
+<span class="c1">####</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">temp_fix</span><span class="p">;</span>
+</pre></div>
+
+
+<p>We can see that MySQL proposed a valid change for 58th s35 but NULL for the rest. We can apply the proposed update, and reinstall the foreign key constraint.</p>
+<div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">s35</span> 
+  <span class="k">JOIN</span> <span class="n">temp_fix</span> <span class="k">ON</span> <span class="n">s35</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">temp_fix</span><span class="p">.</span><span class="n">id</span>
+  <span class="kt">SET</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="o">=</span> <span class="n">temp_fix</span><span class="p">.</span><span class="n">fixed_homsf_id</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>  
+</pre></div>
+
+
+<p>At first glance, one would expect foreign key to fail agian, because we know some homsf_id was updated to NULL, which is not withinse homsf.id. However, a NULL does not constitue a violation to foregin key constraint. To illustrate in more detail:</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span> <span class="k">is</span> <span class="no">NULL</span><span class="p">;</span> <span class="c1">## returns 53</span>
+<span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> 
+  <span class="k">WHERE</span> <span class="n">homsf_id</span> <span class="k">IS</span> <span class="no">NULL</span> 
+  <span class="k">AND</span> <span class="n">homsf_id</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span> <span class="c1">## Returns 0</span>
+</pre></div>
+
+
+<p>We see that homsf_id=NULL is indeed not considered within the homsf.id. We conclude foreign key constraint allows exception only if the expcetion is NULL.</p>
+<p>Recall that we redirected homsf_id=2 to homsf_id=1234 when destroying the database. Note this was not fixed during the procedure above. We can compare entries from s35 and from homsf</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span><span class="p">,</span><span class="n">homsf_id</span>
+   <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span> <span class="k">AS</span> <span class="n">homsf_id</span>
+   <span class="k">FROM</span> <span class="n">homsf</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Result:</p>
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span><span class="p">,</span><span class="n">homsf_id</span>
+    <span class="o">-&gt;</span>    <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">id</span>   <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">54</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">55</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">56</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">57</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">2</span> <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span>   <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1330</span> <span class="o">|</span> <span class="mi">7906</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="mi">5</span> <span class="n">rows</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span> <span class="k">AS</span> <span class="n">homsf_id</span>
+    <span class="o">-&gt;</span>    <span class="k">FROM</span> <span class="n">homsf</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span>     <span class="mi">2</span> <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span>   <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1330</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Some homsf_id is clearly pointing to the wrong homsf entry, without breaking the foregin key constraint, which render the foregin key meaningless. Think about it, if we want to access the homsf_index of a given s35 (id=54), should we:
+    1. query the s35 table at (Class,arch,topo,homsf) or
+    2. query the homsf entry as specified homsf_id '1234' ?  </p>
+<p>With the first approach , query returns 1.10.8.20, whereas with the second approach, query returns 2.60.40.1330. How should we resolve such conflict? Obviously, if we were to enjoy the privlege of foreign key, we should keep the result from second approach. Why? Because we don't even need foreign key in the first approach! </p>
+<p>In reality, however, one would prefer to avoid generating such conflict in the first place, which can be achieved by dropping the (Class, arch, topo, homsf) columns from s35 table, effectively rendering first approach inviable and forcing the second approach. We will not expand the full implementation here and please feel free to practice it.</p>
+<h4>Sidenotes:</h4>
+<ul>
+<li>NULL or NOT NULL, this is a question:</li>
+</ul>
+<p>​Recall we updated some homsf_id to NULL in s35 when attempting the fix. This is only possible if the homsf_id column is nullable. We can check the column property by calling
+  <code>sql
+  SHOW COLUMNS FROM s35;</code>
+  And check the "Null" column of the output.</p>
+<ul>
+<li>
+<p>DROP TABLE IF NOT EXISTS: 
+  This command may not work on some version of SQL. It is quite handy to append "if not exists" to avoid error, but unfortunately it is not available for commands like ADD COLUMN, DROP COLUMN.</p>
+</li>
+<li>
+<p>Cross database FOREIGN KEY error:</p>
+</li>
+</ul>
+<p>When attempting to drop a database that is referred by other database, one would raise ERROR 1217 (23000)[markdown]</p>
+<p>[#### 1. How to fail your deadline? - Starting learning MySQL thinking you can master it in one day!]</p>
+<p>Recently, I touched upon MySQL because I wanted it to be the backend for my incoming Django-based data browser. After 4 days of prolonged fiddling I finally manage to make some notes of its functionality. It is very fast, but equally importantly, very different from Python! The other lesson is that one should allocate enough time for learning when starting a new language (depending on <a href="https://en.wikipedia.org/wiki/Single-linkage_clustering">single linkage distance</a>)</p>
+<p>Today's blog will go through:
+1. Loading a table into MySQL, be it fixed-width or regularly delimited.
+2. Create relations between entries.
+3. How to deal with errors, and fix your relationship:</p>
+<!--more-->
+
+<h4>Overview:</h4>
+<p>MySQL is a SQL(standard query language), that is specialised for:
+1. database management: To create and maintain the structure of a database<br>
+2. Data I/O: Retrieval and deposition of data.</p>
+<p>These functions all look good, so I went on firing a "<code>mysql</code>" shell to try out all different commands it provides, including <code>SELECT</code>, <code>SHOW</code>, <code>DROP</code>, <code>LOAD DATA</code>. </p>
+<h4>1. Loading a table into MySQL.</h4>
+<p>The original goal was to load a fixed-width flatfile into MySQL to form the original dataset. I used regex to transform the flatfile into a delimited form and load it with the command:</p>
+<div class="highlight"><pre><span></span><span class="c1">## Engage a database before doing anything</span>
+<span class="k">CREATE</span> <span class="k">DATABASE</span> <span class="k">IF</span> <span class="k">NOT</span> <span class="k">EXISTS</span> <span class="n">TEST</span><span class="p">;</span>
+<span class="k">USE</span> <span class="n">TEST</span><span class="p">;</span>
+
+<span class="c1">## Reset the table</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">s35</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">table</span> <span class="nf">s35</span><span class="p">(</span>
+   <span class="n">domain_id</span> <span class="kt">char</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span>
+   <span class="n">Class</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">## Note Capital &quot;C&quot; is used to avoid clash with python &quot;class()&quot; keyword</span>
+   <span class="n">arch</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">topo</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">homsf</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s35</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s60</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s95</span>  <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s100</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">s100_seqcnt</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">domain_length</span> <span class="kt">int</span><span class="p">,</span>
+   <span class="n">resolution</span> <span class="kt">float</span><span class="p">);</span>
+
+
+<span class="c1">#### For a regularly delimited file.</span>
+<span class="k">LOAD</span> <span class="n">DATA</span> <span class="n">LOCAL</span> <span class="k">INFILE</span> <span class="s1">&#39;/home/shouldsee/Documents/repos/cathdb/cath-domain-list-S35.txt&#39;</span>
+<span class="k">INTO</span> <span class="k">TABLE</span> <span class="n">s35</span> 
+<span class="n">FIELDS</span> <span class="k">TERMINATED</span> <span class="k">by</span> <span class="s1">&#39;     &#39;</span> <span class="k">lines</span> <span class="k">terminated</span> <span class="k">by</span> <span class="s1">&#39;\n&#39;</span><span class="p">;</span>
+
+<span class="c1">#### If however you got fixed-width CATH CLF.</span>
+<span class="k">LOAD</span> <span class="n">DATA</span> <span class="n">LOCAL</span> <span class="k">INFILE</span> <span class="s1">&#39;/home/shouldsee/Documents/repos/cathdb/cath-domain-list-S35-v4_1_0.txt&#39;</span> 
+<span class="k">INTO</span> <span class="k">TABLE</span> <span class="nf">s35</span>
+<span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">)</span>
+<span class="kt">SET</span> <span class="n">domain_id</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">1</span><span class="p">,</span><span class="mi">7</span><span class="p">)),</span>
+    <span class="n">Class</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">13</span><span class="p">)),</span>
+    <span class="n">arch</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">14</span><span class="p">,</span><span class="mi">19</span><span class="p">)),</span>
+    <span class="n">topo</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">20</span><span class="p">,</span><span class="mi">25</span><span class="p">)),</span>
+    <span class="n">homsf</span> <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">26</span><span class="p">,</span><span class="mi">31</span><span class="p">)),</span>
+    <span class="n">s35</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">37</span><span class="p">)),</span>
+    <span class="n">s60</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">38</span><span class="p">,</span><span class="mi">43</span><span class="p">)),</span>
+    <span class="n">s95</span>   <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">44</span><span class="p">,</span><span class="mi">49</span><span class="p">)),</span>
+    <span class="n">s100</span>  <span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">50</span><span class="p">,</span><span class="mi">55</span><span class="p">)),</span>
+    <span class="n">s100_seqcnt</span><span class="o">=</span> <span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">56</span><span class="p">,</span><span class="mi">61</span><span class="p">)),</span>
+    <span class="n">domain_length</span><span class="o">=</span><span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">67</span><span class="p">)),</span>
+    <span class="n">resolution</span><span class="o">=</span><span class="nf">TRIM</span><span class="p">(</span><span class="nf">SUBSTR</span><span class="p">(</span><span class="o">@</span><span class="n">row</span><span class="p">,</span><span class="mi">68</span><span class="p">,</span><span class="mi">73</span><span class="p">));</span>
+
+<span class="k">SELECT</span> <span class="n">domain_id</span><span class="p">,</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">s35</span> <span class="k">from</span> <span class="n">s35</span> <span class="k">limit</span> <span class="mi">5</span><span class="p">;</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">select</span> <span class="n">domain_id</span><span class="p">,</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">s35</span> <span class="k">from</span> <span class="n">s35</span> <span class="k">limit</span> <span class="mi">5</span><span class="p">;</span> 
+<span class="o">+----------+-------+------+------+-------+------+</span>
+<span class="o">|</span> <span class="n">domain_id</span> <span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">s35</span>  <span class="o">|</span>
+<span class="o">+----------+-------+------+------+-------+------+</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">oaiA00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">1</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">3</span><span class="n">frhA01</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">2</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">oksA00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">3</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">4</span><span class="n">un2B00</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">4</span> <span class="o">|</span>
+<span class="o">|</span> <span class="mi">1</span><span class="n">cukA03</span>  <span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>    <span class="mi">5</span> <span class="o">|</span>
+<span class="o">+----------+-------+------+------+-------+------+</span>
+</pre></div>
+
+
+<ul>
+<li>Note that raw <a href="http://download.cathdb.info/cath/releases/latest-release/cath-classification-data/README-cath-list-file-format.txt">CATH CLF files</a> are fixed-width.</li>
+<li>In case you are not familiar with the organisation of CATH, each "Class" node branches into "Architecture(arch)" children nodes, which in turn branches into "Topology(topo)" children nodes, so on and so forth. <a href="http://wiki.cathdb.info/wiki-beta/doku.php?id=faq">CATH FAQ</a></li>
+<li>Original "cath-domain-list-S35.txt" can be downloaded from <a href="http://download.cathdb.info/cath/releases/all-releases/v4_1_0/cath-classification-data/cath-domain-list-S35-v4_1_0.txt">CATH</a></li>
+</ul>
+<p>Now we have a MySQL table containing all S35 representative structures (S35rep), which allows me to filter the table with some criteria. such as:
+1. "<code>SELECT * FROM s35 WHERE Class=1;</code>" : This will give you all Class 1 S35rep's (You should get 4645 rows).
+2. "<code>SELECT * FROM s35 WHERE resolution&lt;1.0;</code>" : This should give all s35rep with a structual resolution &lt; 1.0 (183 rows)</p>
+<h4>2. Create relations between entries.</h4>
+<p>But there is something I can not fulfill using this structure: Some homologous family (homsf) will have a large number of s35rep (&gt;100) whereas most homsf's will only have several (&lt;5). So it is desirable to filter out the big homsf's only. For example, to count the s35rep in 1.10.8.10, just issue </p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="p">(</span><span class="k">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">)</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">8</span><span class="p">,</span><span class="mi">10</span><span class="p">);</span>
+</pre></div>
+
+
+<p>And it should return a table saying you got 53 entries, which should all be s35rep's. The problem is: <strong>where should we store this number?</strong> We can certainly add a "s35_seqcnt" column into the "s35" table and set all s35rep in (1,10,8,10) to have a "s35_seqcnt" of 53, but careful readers must feel dangerous with this approach, reasons are:
+1. All entries in "s35" table represent s35rep nodes. From this perspective, any s35rep should only have a s35_count of 1, which refers to itself. 
+2. Every time this number changes, (say one s35rep is removed), we will need to update all ~50 entries with the new value (say 52).</p>
+<p>Think about it, s35seq_cnt is a property of homsf, not s35rep itself. If we had a homsf node representing (1,10,8,10), we could have easily set its s35seq_cnt field to be 53, solving both problems at once. Luckily, MySQL is also known as relational database, which means it is built to store relationship. In other words, we can store not only values (e.g: integers,floats,strings), but also cursors to other entries. For this hypothetical homsf node (1,10,8,10), we can actually store a list of cursors pointing to all 53 s35rep's contained within it. </p>
+<div class="highlight"><pre><span></span><span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">homsf</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="nf">homsf</span>
+  <span class="p">(</span><span class="n">id</span> <span class="kt">INT</span> <span class="kp">AUTO_INCREMENT</span> <span class="k">PRIMARY</span> <span class="k">KEY</span><span class="p">,</span> <span class="c1">### Set an index for cursor in the future</span>
+  <span class="n">s35_count</span> <span class="kt">int</span><span class="p">,</span> <span class="c1">## This is new!</span>
+  <span class="n">Class</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">arch</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">topo</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="n">homsf</span> <span class="kt">int</span><span class="p">,</span>
+  <span class="c1">### For homsf, we don&#39;t need index from s35 onwards, but we keep these fields to allow for easier manipulation.</span>
+  <span class="n">s35</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s60</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s95</span>  <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">s100</span> <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">domain_length</span> <span class="kt">int</span> <span class="k">DEFAULT</span> <span class="no">NULL</span><span class="p">,</span>
+  <span class="n">resolution</span> <span class="kt">float</span> <span class="k">DEFAULT</span> <span class="no">NULL</span>
+  <span class="p">);</span>
+
+<span class="c1">### Insert distinct entries into homsf.</span>
+<span class="c1">### Since we set &quot;id&quot; to be AUTO_INCREMENT, we don&#39;t need to assign it since it will be auto-generated</span>
+<span class="k">INSERT</span> <span class="k">INTO</span> <span class="nf">homsf</span> <span class="p">(</span><span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">)</span>
+   <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span> <span class="k">FROM</span> <span class="n">s35</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Now we would have a table containing all 2737 homsf's, but we have yet to establish the relation between 'homsf' and 's35'. We will use the "id" column of homsf since it is the indexed primary key, which allows for fast lookup. We will:
+1. Create a "homsf_id" column in s35 to store its parental homsf node's id.
+2. Fill this "homsf_id" using a for loop.
+3. Add a foreign key constraint to this column. </p>
+<p>In fact, step 1,2 would suffice to specify the relation. Doing step 3 is only for maintainence purpose and constrain any future modification towards the tables, which is essentially a built-in test that every furture version of database has to pass. Though at beginning constraints is very annoying and throws many errors like:
+1. ERROR 1215 (HY000): Cannot add foreign key constraint  (Oh gosh I want to add a constraint!!! Please let me do it!!! Plz!!!)
+2. Error Code: 1452. Cannot add or update a child row: a foreign key constraint fails (Oh you evil constraint! Let go of my table!!! I need to modify it!!! I need to drop it!!! Now!!! Here!!!)
+3. ...</p>
+<h4>3. How to deal with errors, and fix your relationship:</h4>
+<p>Errors can be very, very annoying and could ruin hours and hours. However, once you understand how it works, these errors suddenly become useful indications that alert you of the potential hazard within commands you've just thrown upon MySQL. This is strictly speaking not a TDD example, since the test is not written for development but merely for maintaining the integrity of the database. Nevertheless, to understand the conept of "Test" on its own is essential to move on to the idea of TDD.</p>
+<p>Now let's implement the stated operations in MySQL.</p>
+<div class="highlight"><pre><span></span><span class="c1">### We split these ADD COLUMN commands since they might throw error if homsf_id already exists, but it would require custom procedure to avert so is not included here.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span> 
+   <span class="k">ADD</span> <span class="k">COLUMN</span> <span class="n">homsf_id</span> <span class="kt">INT</span><span class="p">;</span>
+
+
+<span class="c1">### Fill s35.homsf_id with correct cursors to homsf.id</span>
+<span class="c1">### This should only be executed if every s35 can find a homsf. One way to ensure this condition is to create a fresh homsf table from s35. Other approaches with INSERT should be possible.</span>
+
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span>  <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span>
+  <span class="kt">SET</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="n">homsf</span><span class="p">.</span><span class="n">id</span><span class="p">;</span>
+
+<span class="c1">### Impose the foreign key constraint.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span> 
+
+<span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">;</span> <span class="c1">### Confirm homsf does not change size</span>
+</pre></div>
+
+
+<p>It is useful to simulate a 1452 error to illustrate how to debug a foreign key.</p>
+<div class="highlight"><pre><span></span><span class="c1">### Temporarily remove the foreign key.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">DROP</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="n">homsf_fk</span><span class="p">;</span>
+<span class="c1">### Artificially damage the table</span>
+<span class="k">DELETE</span> <span class="k">FROM</span> <span class="n">homsf</span>
+  <span class="k">WHERE</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="c1">###</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="kt">SET</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span>
+  <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="mi">2</span><span class="p">;</span>
+<span class="c1">### NEVER do this to a productive database!!</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="kt">SET</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234567</span>
+  <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span><span class="o">=</span><span class="mi">3</span><span class="p">;</span>
+
+<span class="c1">### Attempt to impose the foreign key constraint.</span>
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+</pre></div>
+
+
+<p>Commands above should throw a 1452:</p>
+<div class="highlight"><pre><span></span><span class="n">ERROR</span> <span class="mi">1452</span> <span class="p">(</span><span class="mi">23000</span><span class="p">):</span> <span class="n">Cannot</span> <span class="k">add</span> <span class="k">or</span> <span class="k">update</span> <span class="n">a</span> <span class="n">child</span> <span class="n">row</span><span class="p">:</span> <span class="n">a</span> <span class="k">foreign</span> <span class="k">key</span> <span class="k">constraint</span> <span class="nf">fails</span> <span class="p">(</span><span class="ss">`TEST`</span><span class="p">.</span><span class="ss">`#sql-78c0_66a`</span><span class="p">,</span> <span class="k">CONSTRAINT</span> <span class="ss">`homsf_fk`</span> <span class="k">FOREIGN</span> <span class="k">KEY</span> <span class="p">(</span><span class="ss">`homsf_id`</span><span class="p">)</span> <span class="k">REFERENCES</span> <span class="ss">`homsf`</span> <span class="p">(</span><span class="ss">`id`</span><span class="p">))</span>
+</pre></div>
+
+
+<p>We can find out which key is missing with SELECT ... WHERE ...NOT IN. But note this will NOT report that homsf_id=2 has been redirected to homsf_id=1234 !!</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span><span class="n">arch</span><span class="p">,</span><span class="n">topo</span><span class="p">,</span><span class="n">homsf</span><span class="p">,</span><span class="n">homsf_id</span> <span class="k">FROM</span> <span class="n">s35</span>
+   <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span>
+<span class="k">UPDATE</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span>  <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span>
+</pre></div>
+
+
+<div class="highlight"><pre><span></span><span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">10</span> <span class="o">|</span>        <span class="mi">1</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1234567</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+</pre></div>
+
+
+<p>By inspection, we found homsf_id 1 and 1234567 is not referring to any existing homsf.id, perventing us from installing a constraint. So we might consider create new homsf to accommodate these s35 entries. But wait a minute, we don't want to create new homsf that coincide with an existing homsf! We can ensure this by trying to update homsf_id according to existing homsf table.</p>
+<div class="highlight"><pre><span></span><span class="c1">#### Save the sub-table with failed keys to a temp table.</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">s35</span>
+   <span class="k">WHERE</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="k">NOT</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span>
+
+<span class="c1">#### Dump the proposed fix into a table `temp_fix`</span>
+<span class="k">DROP</span> <span class="k">TABLE</span> <span class="k">IF</span> <span class="k">EXISTS</span> <span class="n">temp_fix</span><span class="p">;</span>
+<span class="k">CREATE</span> <span class="k">TABLE</span> <span class="n">temp_fix</span>
+<span class="k">SELECT</span> <span class="n">s35</span><span class="p">.</span><span class="n">id</span><span class="p">,</span>
+  <span class="n">homsf_id</span><span class="p">,</span>
+  <span class="n">homsf</span><span class="p">.</span><span class="n">id</span> <span class="k">as</span> <span class="n">fixed_homsf_id</span> <span class="k">FROM</span> <span class="n">temp</span> <span class="k">AS</span> <span class="n">s35</span>
+  <span class="k">LEFT</span> <span class="k">JOIN</span> <span class="n">homsf</span> 
+  <span class="k">ON</span> <span class="p">(</span> <span class="n">s35</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf</span><span class="p">)</span> <span class="o">=</span> <span class="p">(</span> <span class="n">homsf</span><span class="p">.</span><span class="n">Class</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">arch</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">.</span><span class="n">homsf</span><span class="p">);</span>
+<span class="c1">####</span>
+<span class="k">SELECT</span> <span class="o">*</span> <span class="k">FROM</span> <span class="n">temp_fix</span><span class="p">;</span>
+</pre></div>
+
+
+<p>We can see that MySQL proposed a valid change for 58th s35 but NULL for the rest. We can apply the proposed update, and reinstall the foreign key constraint.</p>
+<div class="highlight"><pre><span></span><span class="k">UPDATE</span> <span class="n">s35</span> 
+  <span class="k">JOIN</span> <span class="n">temp_fix</span> <span class="k">ON</span> <span class="n">s35</span><span class="p">.</span><span class="n">id</span> <span class="o">=</span> <span class="n">temp_fix</span><span class="p">.</span><span class="n">id</span>
+  <span class="kt">SET</span> <span class="n">s35</span><span class="p">.</span><span class="n">homsf_id</span> <span class="o">=</span> <span class="n">temp_fix</span><span class="p">.</span><span class="n">fixed_homsf_id</span><span class="p">;</span>
+
+<span class="k">ALTER</span> <span class="k">TABLE</span> <span class="n">s35</span>
+   <span class="k">ADD</span> <span class="k">CONSTRAINT</span> <span class="n">homsf_fk</span>
+   <span class="k">FOREIGN</span> <span class="k">KEY</span><span class="p">(</span><span class="n">homsf_id</span><span class="p">)</span>
+   <span class="k">REFERENCES</span> <span class="nf">homsf</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>  
+</pre></div>
+
+
+<p>At first glance, one would expect foreign key to fail agian, because we know some homsf_id was updated to NULL, which is not withinse homsf.id. However, a NULL does not constitue a violation to foregin key constraint. To illustrate in more detail:</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span> <span class="k">is</span> <span class="no">NULL</span><span class="p">;</span> <span class="c1">## returns 53</span>
+<span class="k">SELECT</span> <span class="nf">COUNT</span><span class="p">(</span><span class="o">*</span><span class="p">)</span> <span class="k">FROM</span> <span class="n">s35</span> 
+  <span class="k">WHERE</span> <span class="n">homsf_id</span> <span class="k">IS</span> <span class="no">NULL</span> 
+  <span class="k">AND</span> <span class="n">homsf_id</span> <span class="k">IN</span> <span class="p">(</span><span class="k">SELECT</span> <span class="n">id</span> <span class="k">FROM</span> <span class="n">homsf</span><span class="p">);</span> <span class="c1">## Returns 0</span>
+</pre></div>
+
+
+<p>We see that homsf_id=NULL is indeed not considered within the homsf.id. We conclude foreign key constraint allows exception only if the expcetion is NULL.</p>
+<p>Recall that we redirected homsf_id=2 to homsf_id=1234 when destroying the database. Note this was not fixed during the procedure above. We can compare entries from s35 and from homsf</p>
+<div class="highlight"><pre><span></span><span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span><span class="p">,</span><span class="n">homsf_id</span>
+   <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span> <span class="k">AS</span> <span class="n">homsf_id</span>
+   <span class="k">FROM</span> <span class="n">homsf</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+</pre></div>
+
+
+<p>Result:</p>
+<div class="highlight"><pre><span></span><span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span><span class="p">,</span><span class="n">homsf_id</span>
+    <span class="o">-&gt;</span>    <span class="k">FROM</span> <span class="n">s35</span> <span class="k">WHERE</span> <span class="n">homsf_id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">id</span>   <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">54</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">55</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">56</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">1</span> <span class="o">|</span>   <span class="mi">10</span> <span class="o">|</span>    <span class="mi">8</span> <span class="o">|</span>    <span class="mi">20</span> <span class="o">|</span>   <span class="mi">57</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">|</span>     <span class="mi">2</span> <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span>   <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1330</span> <span class="o">|</span> <span class="mi">7906</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+------+----------+</span>
+<span class="mi">5</span> <span class="n">rows</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">00</span> <span class="n">sec</span><span class="p">)</span>
+
+<span class="n">mysql</span><span class="o">&gt;</span> <span class="k">SELECT</span> <span class="k">DISTINCT</span> <span class="n">Class</span><span class="p">,</span> <span class="n">arch</span><span class="p">,</span> <span class="n">topo</span><span class="p">,</span> <span class="n">homsf</span><span class="p">,</span><span class="n">id</span> <span class="k">AS</span> <span class="n">homsf_id</span>
+    <span class="o">-&gt;</span>    <span class="k">FROM</span> <span class="n">homsf</span> <span class="k">WHERE</span> <span class="n">id</span><span class="o">=</span><span class="mi">1234</span><span class="p">;</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span> <span class="n">Class</span> <span class="o">|</span> <span class="n">arch</span> <span class="o">|</span> <span class="n">topo</span> <span class="o">|</span> <span class="n">homsf</span> <span class="o">|</span> <span class="n">homsf_id</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="o">|</span>     <span class="mi">2</span> <span class="o">|</span>   <span class="mi">60</span> <span class="o">|</span>   <span class="mi">40</span> <span class="o">|</span>  <span class="mi">1330</span> <span class="o">|</span>     <span class="mi">1234</span> <span class="o">|</span>
+<span class="o">+-------+------+------+-------+----------+</span>
+<span class="mi">1</span> <span class="n">row</span> <span class="k">in</span> <span class="kt">set</span> <span class="p">(</span><span class="mi">0</span><span class="p">.</span><span class="mi">01</span> <span class="n">sec</span><span class="p">)</span>
+</pre></div>
+
+
+<p>Some homsf_id is clearly pointing to the wrong homsf entry, without breaking the foregin key constraint, which render the foregin key meaningless. Think about it, if we want to access the homsf_index of a given s35 (id=54), should we:
+    1. query the s35 table at (Class,arch,topo,homsf) or
+    2. query the homsf entry as specified homsf_id '1234' ?  </p>
+<p>With the first approach , query returns 1.10.8.20, whereas with the second approach, query returns 2.60.40.1330. How should we resolve such conflict? Obviously, if we were to enjoy the privlege of foreign key, we should keep the result from second approach. Why? Because we don't even need foreign key in the first approach! </p>
+<p>In reality, however, one would prefer to avoid generating such conflict in the first place, which can be achieved by dropping the (Class, arch, topo, homsf) columns from s35 table, effectively rendering first approach inviable and forcing the second approach. We will not expand the full implementation here and please feel free to practice it.</p>
+<h4>Sidenotes:</h4>
+<ul>
+<li>NULL or NOT NULL, this is a question:</li>
+</ul>
+<p>​Recall we updated some homsf_id to NULL in s35 when attempting the fix. This is only possible if the homsf_id column is nullable. We can check the column property by calling
+  <code>sql
+  SHOW COLUMNS FROM s35;</code>
+  And check the "Null" column of the output.</p>
+<ul>
+<li>
+<p>DROP TABLE IF NOT EXISTS: 
+  This command may not work on some version of SQL. It is quite handy to append "if not exists" to avoid error, but unfortunately it is not available for commands like ADD COLUMN, DROP COLUMN.</p>
+</li>
+<li>
+<p>Cross database FOREIGN KEY error:</p>
+</li>
+</ul>
+<p>When attempting to drop a database that is referred by other database, one would raise ERROR 1217 (23000) at line xxx: Cannot delete or update a parent row: a foreign key constraint fails. Two options availabe:
+  1. Inspect the violated foreign key and attempt manual fix by checking "LATEST FOREIGN KEY ERROR" from the output of :
+  <code>mysql
+  SHOW ENGINE INNODB STATUS;</code>
+  2. Disable foreign key constraint and force a drop (only if you are confident this won't break anything.)</p>
+<p><code>mysql
+  SET foreign_key_checks = 0;
+  DROP DATABASE ...
+  SET foreign_key_checks = 1;</code></p>
+<ul>
+<li>CUSTOM PROCEDURE: 
+  Custom functions in SQL is called procedures, but beginners like me should avoid writing custom functions whenever possible, because they are very difficult to write correctly!</li>
+<li>Version Control:
+  To make sure results are reproducible, one should always write purposeful codes stored in files, preferably ending with ".sql". To avoid having to write SQL procedures, one may consider defining bash function that execute a designated ".sql" file instead and writing corresponding tests in bash. Another workaround is to store SQL code in Django migration files and execute using <a href="https://docs.djangoproject.com/en/1.11/ref/migration-operations/#runsql">django.db.migrations.RunSQL()</a>. By keeping a track of data source flatfiles,".sql" files and ".py" migration files and even ".json" <a href="https://coderwall.com/p/mvsoyg/django-dumpdata-and-loaddata">fixtures</a>, we can restore to any state we want.</li>
+</ul>
+<p>Feng Geng<br>
+Summer Student<br>
+ISMB,UCL</p>
+<p>at line xxx: Cannot delete or update a parent row: a foreign key constraint fails. Two options availabe:
+  1. Inspect the violated foreign key and attempt manual fix by checking "LATEST FOREIGN KEY ERROR" from the output of :
+  <code>mysql
+  SHOW ENGINE INNODB STATUS;</code>
+  2. Disable foreign key constraint and force a drop (only if you are confident this won't break anything.)</p>
+<p><code>mysql
+  SET foreign_key_checks = 0;
+  DROP DATABASE ...
+  SET foreign_key_checks = 1;</code></p>
+<ul>
+<li>CUSTOM PROCEDURE: 
+  Custom functions in SQL is called procedures, but beginners like me should avoid writing custom functions whenever possible, because they are very difficult to write correctly!</li>
+<li>Version Control:
+  To make sure results are reproducible, one should always write purposeful codes stored in files, preferably ending with ".sql". To avoid having to write SQL procedures, one may consider defining bash function that execute a designated ".sql" file instead and writing corresponding tests in bash. Another workaround is to store SQL code in Django migration files and execute using <a href="https://docs.djangoproject.com/en/1.11/ref/migration-operations/#runsql">django.db.migrations.RunSQL()</a>. By keeping a track of data source flatfiles,".sql" files and ".py" migration files and even ".json" <a href="https://coderwall.com/p/mvsoyg/django-dumpdata-and-loaddata">fixtures</a>, we can restore to any state we want.</li>
+</ul>
+<p>Feng Geng<br>
+Summer Student<br>
+ISMB,UCL</p>
+    </div><!-- /.entry-content -->
+
+  </article>
+</section>
+        <section id="extras" class="body">
+                <div class="social">
+                        <h2>social</h2>
+                        <ul>
+                            <li><a href="/feeds/all.atom.xml" type="application/atom+xml" rel="alternate">atom feed</a></li>
+
+                        </ul>
+                </div><!-- /.social -->
+        </section><!-- /#extras -->
+
+        <footer id="contentinfo" class="body">
+                <address id="about" class="vcard body">
+                Proudly powered by <a href="http://getpelican.com/">Pelican</a>, which takes great advantage of <a href="http://python.org">Python</a>.
+                </address><!-- /#about -->
+
+                <p>The theme is by <a href="http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/">Smashing Magazine</a>, thanks!</p>
+        </footer><!-- /#contentinfo -->
+
+</body>
+</html>
