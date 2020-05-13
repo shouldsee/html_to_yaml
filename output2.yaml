@@ -1,0 +1,26 @@
+_#t: html
+_@lang: en
+_#c:
+- _#t: head
+  _#c:
+  - _#t: meta
+    _@charset: utf-8
+    _#c: []
+  - _#t: title
+    _#c:
+    - _#r: 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
+  - _#t: link
+    _@rel: stylesheet
+    _@href: /theme/css/main.css
+    _#c:
+    - _#t: a
+      _@href: ''
+      _#c:
+      - _#r: blah
+    - _#r: something
+  - _#t: link
+    _@href: /feeds/all.atom.xml
+    _@type: application/atom+xml
+    _@rel: alternate
+    _@title: A Pelican Blog Atom Feed
+    _#c: []

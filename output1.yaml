@@ -1,0 +1,251 @@
+html: _
+lang: en
+_#c:
+- head: _
+  _#c:
+  - meta: _
+    charset: utf-8
+    _#c: []
+  - title: _
+    _#c:
+    - 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
+  - link: _
+    rel: stylesheet
+    href: /theme/css/main.css
+    _#c: []
+  - link: _
+    href: /feeds/all.atom.xml
+    type: application/atom+xml
+    rel: alternate
+    title: A Pelican Blog Atom Feed
+    _#c: []
+- body: _
+  id: index
+  class: home
+  _#c:
+  - header: _
+    id: banner
+    class: body
+    _#c:
+    - h1: _
+      _#c:
+      - a: _
+        href: /
+        _#c:
+        - 'A Pelican Blog '
+    - nav: _
+      _#c:
+      - ul: _
+        _#c:
+        - li: _
+          _#c:
+          - a: _
+            href: /category/list.html
+            _#c:
+            - list
+        - li: _
+          class: active
+          _#c:
+          - a: _
+            href: /category/maths.html
+            _#c:
+            - maths
+        - li: _
+          _#c:
+          - a: _
+            href: /category/pages.html
+            _#c:
+            - pages
+        - li: _
+          _#c:
+          - a: _
+            href: /category/program.html
+            _#c:
+            - program
+        - li: _
+          _#c:
+          - a: _
+            href: /category/story.html
+            _#c:
+            - story
+        - li: _
+          _#c:
+          - a: _
+            href: /category/thoughts.html
+            _#c:
+            - thoughts
+  - section: _
+    id: content
+    class: body
+    _#c:
+    - article: _
+      _#c:
+      - header: _
+        _#c:
+        - h1: _
+          class: entry-title
+          _#c:
+          - a: _
+            href: /ying-yong-_yong-hui-gui-tu-dui-fu-hao-dong-li-xue-jin-xing-ban-xi-tong-de-fen-lei-_lun-ke-ce-bian-huan-huo-dong-li-xi-tong-yu-du-liang-han-shu-de-ou-he-ji-wei-rao-lun-de-tuo-zhan.html
+            rel: bookmark
+            title: Permalink to 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
+            _#c:
+            - 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
+      - div: _
+        class: entry-content
+        _#c:
+        - footer: _
+          class: post-info
+          _#c:
+          - abbr: _
+            class: published
+            title: '2017-02-15T11:35:00+00:00'
+            _#c:
+            - "\n                Published: 三 15 二月 2017\n        "
+          - p: _
+            _#c:
+            - 'In '
+            - a: _
+              href: /category/maths.html
+              _#c:
+              - maths
+            - .
+          - p: _
+            _#c:
+            - 'tags: '
+            - a: _
+              href: /tag/chinese.html
+              _#c:
+              - chinese
+            - ' '
+            - a: _
+              href: /tag/maths.html
+              _#c:
+              - maths
+            - ' '
+        - p: _
+          _#c:
+          - 以相关性(correlation)为度量的回归图忠实地反映了基础元胞自动机(ECA)的动力学性质，可以很好地区分稳态和混沌态。
+        - p: _
+          _#c:
+          - 我对Logistic Mapping做了简单的耦合推广，并应用回归图找到了处在混沌边界的参数，有趣的是这种推广系统也处在混沌边界。
+        - p: _
+          _#c:
+          - img: _
+            class: alignnone size-full wp-image-253
+            src: /wp-content/uploads/2017/02/demo_log_torus.jpg
+            alt: demo_log_torus
+            width: '2409'
+            height: '436'
+            _#c: []
+        - p: _
+          _#c:
+          - img: _
+            class: alignnone size-full wp-image-304
+            src: /wp-content/uploads/2017/02/logistic__3-811_corrprofile.jpg
+            alt: logistic__3-811_corrprofile
+            width: '1000'
+            height: '563'
+            _#c: []
+        - p: _
+          _#c:
+          - 讨论：二维元胞自动机是一个幻象，它并不比一维元胞高明到哪里去，对于Glider和Pattern的分类看起来没有发展壮大的希望。CA和物理学的联系目前还是太弱了，需要一些契机把CA爱好者引导到更有建设性的道路上。Wolfram对Rule110的阐释是很有insight的，但是他本人最后也认识到CA有一些内在的缺陷使其不能模拟神经网络。我希望Derrida
+            Plot的复兴可以改变这一情况，这一工具允许人们更加系统地对自动机的动力学性质进行分类，而且和微扰论有很深的联系，希望有更多的人参与到这个研究里来。
+        - p: _
+          _#c:
+          - 这里用一个二维BS元胞自动机为例子(B013468/S23,生命游戏是B3/S23),大致介绍一下Covariance Profile的具体操作办法，用一个常值分布随机取两个初始状态，计算它们的距离H(0),接下来用CA规则将两个初态分别迭代T次，并记录它们的轨迹。这样我们可以得到H(1),H(2),H(3)....H(T).
+            然后把上述操作重复N次。想象[H(1),H(2)]在平面内确定一个点，由于有N个样本，我们可以确定N个点，这时候我们可以计算H(1),H(2)的统计学关系(一开始我用的是相关性(Pearson
+            Correlation),后面发现不够灵敏，于是换成了协方差(Covariance)
+        - p: _
+          _#c:
+          - img: _
+            class: alignnone size-full wp-image-306
+            src: /wp-content/uploads/2017/02/expanded6491tca.jpg
+            alt: expanded6491tca
+            width: '735'
+            height: '661'
+            _#c: []
+        - p: _
+          _#c:
+          - 对于任选的H(t_a),H(t_b),我们都可以确定一个分布并且抽象成一个单值。将这些单值集合起来之后，我们就的到了刚刚看到的热相图。
+        - p: _
+          _#c:
+          - img: _
+            class: alignnone size-full wp-image-308
+            src: /wp-content/uploads/2017/02/collected6491tca.jpg
+            alt: collected6491tca
+            width: '497'
+            height: '416'
+            _#c: []
+        - p: _
+          _#c:
+          - (这里的单值用的都是协方差。)
+        - p: _
+          _#c:
+          - 我的观察是，热相图的凹凸性可以很好地刻画原系统的动力学性质。可以看到这个热相图的对角线有一个凹扩散，这一般对应复杂的动力学（complex,相对于混沌
+            chaotic，稳定 stable而言）
+        - p: _
+          _#c:
+          - 待续
+        - p: _
+          _#c:
+          - 'Comments: '
+        - ol: _
+          _#c:
+          - li: _
+            _#c:
+            - p: _
+              _#c:
+              - 'Yanbo Zhang zhangyb1"AT"mail.ustc.edu.cn: Logistic Mapping 的想法非常有意思，似乎只用一个参数k就出现了Wolfram的四个基本类型。我在想，是否可以对离散元胞自动机做逆向的工作，从时空图直接反推到k，从而得到一个意义非常明确的序参量。'
+          - li: _
+            _#c:
+            - p: _
+              _#c:
+              - 'shouldsee: 我现在的想法是完全用密度涨落来描述动力学性质，而不是用DerridaPlot。 把密度涨落抽象成几个Scalar的序参量应该是可行的，但是我还没有仔细考虑什么样的抽取办法是推广性最好的，因为目前这个抽取办法挺初等的，还缺少很多形式上的工作，只是从实用的角度发现还挺有用。'
+  - section: _
+    id: extras
+    class: body
+    _#c:
+    - div: _
+      class: social
+      _#c:
+      - h2: _
+        _#c:
+        - social
+      - ul: _
+        _#c:
+        - li: _
+          _#c:
+          - a: _
+            href: /feeds/all.atom.xml
+            type: application/atom+xml
+            rel: alternate
+            _#c:
+            - atom feed
+  - footer: _
+    id: contentinfo
+    class: body
+    _#c:
+    - address: _
+      id: about
+      class: vcard body
+      _#c:
+      - "\n                Proudly powered by "
+      - a: _
+        href: http://getpelican.com/
+        _#c:
+        - Pelican
+      - ', which takes great advantage of '
+      - a: _
+        href: http://python.org
+        _#c:
+        - Python
+      - ".\n                "
+    - p: _
+      _#c:
+      - 'The theme is by '
+      - a: _
+        href: http://coding.smashingmagazine.com/2009/08/04/designing-a-html-5-layout-from-scratch/
+        _#c:
+        - Smashing Magazine
+      - ', thanks!'

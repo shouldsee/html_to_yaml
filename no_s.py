@@ -32,16 +32,17 @@ def str_html_to_yaml(buf):
 def node_to_dict(x):
   o = collections.OrderedDict()
   # o['_#s'] = OrderedDict()
-  o[x.tag] = '_'
-  for k,v in x.items(): o['%s'%k] = v; 
-
-  o['_#c'] = []  
-  if x.text: o['_#c'].append(x.text)
-  # {"_#r":x.text})  
+  o['_#t'] = x.tag
+  for k,v in x.items(): o['_@%s'%k] = v; 
+  o['_#c'] = []
+  if x.text: o['_#c'].append({"_#r":x.text})
+  
   res = x.getchildren()
+  # if not len(res):
+  #   return x
   for xx in res:
     o['_#c'].append(node_to_dict(xx))
-    if xx.tail: o['_#c'].append(xx.tail)
+    if xx.tail: o['_#c'].append({"_#r":xx.tail})
   # import pdb; pdb.set_trace()
   return o
 
@@ -60,44 +61,39 @@ def dict_to_node(o, xpo, xlo):
   <xpo> node casted from the parent dict
 
   '''
-  if isinstance(o,str):
+  if '_#t' not in o:
+    assert '_#r' in o, o.keys()
     if xlo is None:
       ## this is the first child
       ## set text of parent node <xpo>
-      xpo.text = o
+      xpo.text = o['_#r']
       return o
-    elif isinstance(xlo, str):
+    elif isinstance(xlo, dict):
       raise Exception(f'Consecutive raw fields in list: [{xlo!r},{o!r}')
     else:  
       ## this is not the first child
       ## set tail of last node
-      xlo.tail = o
+      xlo.tail = o['_#r']
       return o
   else:
-    oks = list(o)
-    v = o.pop(oks[0])
-    assert v in '_',('Invalid tag name', oks[0], v)
-    xpo = ET.Element(oks[0])
-
-    for i,(k,v) in enumerate(o.items()):
-      if k[:3] == '_#c':
-        assert i+1 == len(o), (i, k, o.keys())
-        break
-      else:
-        xpo.set(k, v)
-
-    if oks[-1] == '_#cr':
-      ### use _#cr to map to a _#c: [{_#r: innerHtml }] <--> _#cr: innterHtml
-      xpo.text = o['_#cr']
+    assert '_#t' in o,o.keys()
+    if '_#cr' in o:
+      assert '_#c' not in o,o.keys()
+      xpo = ET.Element(o.pop('_#t'))
+      xpo.text = o.pop('_#cr')
     else:
-      assert oks[-1] =='_#c'
+      assert '_#c' in o,o.keys()
+      xpo = ET.Element(o.pop('_#t'))
       xlo = None
-      for oo in o['_#c']:
+      for oo in o.pop('_#c'):
         xlo = dict_to_node(oo, xpo, xlo)
-        if not isinstance(xlo,str):
+        if not isinstance(xlo,dict):
           xpo.append(xlo)
+
       ## anything left should be an attribute field
-    # assert not len(o),('Not all keys processed. Only allowing _#t, _#c, _#cr',o.keys())
+    for k,v in o.items():
+      assert k[:2] == '_@',o.keys()
+      xpo.set(k[2:], v)
 
     # if len(o)>=2:
     #   pprint(['_#o',o])
@@ -183,48 +179,6 @@ def main():
   output.close()
   sys.exit(0)
   # test_main()
-
-
-# s = '''
-# - _#t: html
-#   _@lang: en
-# - - - _#t: head
-#     - - - _#t: meta
-#           _@charset: utf-8
-#         - []
-#       - - _#t: title
-#         - - _#r
-#     - _#t: title
-#       _#c:
-#       - _#r: 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
-#     - _#t: link
-#       _@rel: stylesheet
-#       _@href: /theme/css/main.css
-#       _#c: []
-#     - _#t: link
-#       _@href: /feeds/all.atom.xml
-#       _@type: application/atom+xml
-#       _@rel: alternate
-#       _@title: A Pelican Blog Atom Feed
-#       _#c: []
-s = '''
-  - _#t:
-      link: _
-      rel: stylesheet
-      href: /theme/css/main.css
-'''
-# pprint(ordered_load(s))
-# '''
-# # import 
-# d = ordered_load(s)
-
-# def y(d):
-#     pprint([d[0],None])
-#     for xx in d[1]:
-#       y(xx)
-#       # y(d[])
-# y(d)
-# pprint(d[0])
 
 if __name__=='__main__':
   main()

@@ -1,37 +1,36 @@
 # from html_to_yaml import *
-# from no_s import *
-from html_to_yaml import *
+from no_s import *
 def test_str_html_to_yaml():
   output = '''
-html: _
-lang: en
+_#t: html
+_@lang: en
 _#c:
-- head: _
+- _#t: head
   _#c:
-  - meta: _
-    charset: utf-8
+  - _#t: meta
+    _@charset: utf-8
     _#c: []
-  - title: _
+  - _#t: title
     _#c:
-    - 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
-  - link: _
-    rel: stylesheet
-    href: /theme/css/main.css
+    - _#r: 应用_用回归图对符号动力学进行半系统的分类_论可测变换或动力系统与度量函数的耦合暨微扰论的拓展
+  - _#t: link
+    _@rel: stylesheet
+    _@href: /theme/css/main.css
     _#c:
-    - anything
-    - a: _
-      href: ''
+    - _#r: anything
+    - _#t: a
+      _@href: ''
       _#c:
-      - blah
-    - something
-    - a: _
+      - _#r: blah
+    - _#r: something
+    - _#t: a
       _#c: []
-    - something_else
-  - link: _
-    href: /feeds/all.atom.xml
-    type: application/atom+xml
-    rel: alternate
-    title: A Pelican Blog Atom Feed
+    - _#r: something_else
+  - _#t: link
+    _@href: /feeds/all.atom.xml
+    _@type: application/atom+xml
+    _@rel: alternate
+    _@title: A Pelican Blog Atom Feed
     _#c: []
 '''.strip()
   x = yaml.load(output)
@@ -67,12 +66,12 @@ _#c:
   # print(x)
 def test_inline():
   xx = '''
-link: _
-rel: stylesheet
-href: /theme/css/main.css
+_#t: link
+_@rel: stylesheet
+_@href: /theme/css/main.css
 _#c:
-  - anything
-  - {a: _, href: '', _#cr: blah }
+  - _#r: anything
+  - {_#t: a, _@href: '', _#cr: blah }
   '''
   exp = '<link rel="stylesheet" href="/theme/css/main.css">anything<a href="">blah</a></link>'
   xd = ordered_load(xx)
