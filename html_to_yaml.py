@@ -18,6 +18,17 @@ s = '''
 
 import yaml
 
+# import xml.etree.ElementTree as ET
+import lxml.etree as ET
+ETParser = ET.XMLParser(remove_comments=True, remove_blank_text=True, resolve_entities=False)
+# ETParser = ET.XMLParser(remove_comments=True, remove_blank_text=True, resolve_entities=True)
+# False)
+# import lxml.html as ET
+# ETParser = ET.HTMLParser(remove_comments=True, remove_blank_text=True)
+# (self, encoding=None, remove_blank_text=False, remove_comments=False, remove_pis=False, strip_cdata=True, no_network=True, target=None, schema: XMLSchema=None, recover=True, compact=True, collect_ids=True, huge_tree=False)
+# , resolve_entities=False)
+import collections
+import io
 
 def str_dict_to_yaml(x):
   return ordered_dump(x, sort_keys=False, allow_unicode=True,)
@@ -29,31 +40,75 @@ def str_html_to_yaml(buf):
   return out 
 
 
-def node_to_dict(x):
-  o = collections.OrderedDict()
-  # o['_#s'] = OrderedDict()
-  o[x.tag] = '_'
-  for k,v in x.items(): o['%s'%k] = v; 
-
-  o['_#c'] = []  
-  if x.text: o['_#c'].append(x.text)
-  # {"_#r":x.text})  
-  res = x.getchildren()
-  for xx in res:
-    o['_#c'].append(node_to_dict(xx))
-    if xx.tail: o['_#c'].append(xx.tail)
-  # import pdb; pdb.set_trace()
-  return o
-
-def str_html_to_dict(buf):
+def str_html_to_dict(buf,parser = ETParser):
   # x = ET.fromstring(buf, remove_comments=True)
-  x = ET.parse(io.BytesIO(buf.encode()), parser =ET.XMLParser(remove_comments=True, remove_blank_text=True))
-  x = x.getroot()
+  x = ET.parse(io.BytesIO(buf.encode()), parser = parser)
+  # import pdb; pdb.set_trace()
+  # x = x.getroot()
   # remove_comments=True)
   y = node_to_dict(x)
   return y
 
-def dict_to_node(o, xpo, xlo):
+
+def node_to_dict(x):
+  o   = collections.OrderedDict()
+  # import pdb; pdb.set_trace()
+  # o['_#s'] = OrderedDict()
+  # tag = x.tag
+  # print('[prefix]',x.sourceline)
+  if 0:
+    pass
+  elif type(x) is ET._ElementTree:
+    # ET.DocInfo:
+    # import pdb; pdb.set_trace()
+    # ET.DocInfo
+    # xx = x.docinfo
+    o['_']= 'D'   
+    # o['root_name'] = x.docinfo.root_name
+    # if x.docinfo.root_name == 'html':
+    a = (x.docinfo.root_name,
+      x.docinfo.public_id,
+      x.docinfo.system_url,
+      x.docinfo.doctype,)
+    # import pdb; pdb.set_trace()
+    # o.__setitem__('root_name', x.docinfo.root_name) 
+    if x.docinfo.doctype:
+      o['doctype'] = OrderedDict()
+      o['doctype']['public_id']  = x.docinfo.public_id
+      o['doctype']['system_url'] = x.docinfo.system_url
+    oo = node_to_dict(x.getroot())
+    o['_#c'] = [oo]
+    assert x.docinfo.root_name == list(oo)[0],( x.docinfo.root_name,list(oo)[0])
+    # .keys()[0]
+    return o
+  elif type(x) is ET._Element:
+    o[x.tag] = 'T'
+    for k,v in x.items(): o['%s'%k] = v; 
+    o['_#c'] = []  
+    if x.text: o['_#c'].append(x.text)
+    # {"_#r":x.text})  
+    res = x.getchildren()
+    for xx in res:
+      o['_#c'].append(node_to_dict(xx))
+      if xx.tail: o['_#c'].append(xx.tail)
+    # import pdb; pdb.set_trace()
+    return o
+
+  elif type(x) is ET._Entity:
+    print('[E]',x)
+    # import pdb; pdb.set_trace()
+    o[x.name] ='E'
+    text = f'&{x.name};'
+    assert text == x.text,(text,x.text)
+    o['_#c'] = []
+    return o
+
+  else:
+    assert 0,(type(x),x, getattr(x,'tag',None))
+
+
+
+def dict_to_node(o, xpo, xlo, buf):
   '''
   <o> current dict
   <xlo> node casted from the last dict
@@ -73,47 +128,82 @@ def dict_to_node(o, xpo, xlo):
       ## set tail of last node
       xlo.tail = o
       return o
-  else:
+  elif isinstance(o,list):
+    assert 0,('Undefined occurence of list %s'%(repr(o)[:200]))
+  elif isinstance(o,dict):
+    o = OrderedDict(o)
     oks = list(o)
+    k = oks[0]
     v = o.pop(oks[0])
-    assert v in '_',('Invalid tag name', oks[0], v)
-    xpo = ET.Element(oks[0])
+    if v is 'T':
+      xpo = ET.Element(oks[0])
 
-    for i,(k,v) in enumerate(o.items()):
-      if k[:3] == '_#c':
-        assert i+1 == len(o), (i, k, o.keys())
-        break
+      for i,(k,v) in enumerate(o.items()):
+        if k[:3] == '_#c':
+          assert i+1 == len(o), (i, k, o.keys())
+          break
+        else:
+          xpo.set(k, v)
+
+      if oks[-1] == '_#cr':
+        ### use _#cr to map to a _#c: [{_#r: innerHtml }] <--> _#cr: innterHtml
+        xpo.text = o['_#cr']
       else:
-        xpo.set(k, v)
+        assert oks[-1] =='_#c'
+        xlo = None
+        for oo in o['_#c']:
+          xlo = dict_to_node(oo, xpo, xlo, buf)
+          if not isinstance(xlo,str):
+            xpo.append(xlo)
+      return xpo
+    elif v is 'E':
+      'this is an entity like &nbsp;. lets append to the text of parent node'
+      # print('[dbg]',v.tag,v.text,v.prefix)
+      # import pdb; pdb.set_trace()
+      xpo = ET.Entity(k)
+      # assert len(oks)==1
+      return xpo
+    elif v is 'D':
+      assert k is '_',('Key must be _ when specifying D _: D ',k,v)
+      # xpo = init_et_tree(o)
+      oo = o['_#c'][0]
+      root_name = list( oo )[0]
+      xpo = ET.ElementTree( dict_to_node(oo, xpo, None, buf) )
 
-    if oks[-1] == '_#cr':
-      ### use _#cr to map to a _#c: [{_#r: innerHtml }] <--> _#cr: innterHtml
-      xpo.text = o['_#cr']
+      if 'doctype' in o:
+        v = o['doctype']
+        if isinstance(v,dict):
+          xpo.docinfo.system_url = v['system_url']
+          xpo.docinfo.public_id  = v['public_id']
+        else:
+          buf.write(f'<!DOCTYPE {root_name}>\n'.encode())
+      return xpo
+
+
     else:
-      assert oks[-1] =='_#c'
-      xlo = None
-      for oo in o['_#c']:
-        xlo = dict_to_node(oo, xpo, xlo)
-        if not isinstance(xlo,str):
-          xpo.append(xlo)
+      assert 0,('Invalid node identifier', oks[0], v)
+
       ## anything left should be an attribute field
     # assert not len(o),('Not all keys processed. Only allowing _#t, _#c, _#cr',o.keys())
 
     # if len(o)>=2:
     #   pprint(['_#o',o])
       # import pdb; pdb.set_trace()
-    return xpo
+    # return xpo
 
 
   pass
 
-# import xml.etree.ElementTree as ET
-import lxml.etree as ET
-import collections
-import io
+
 def str_yaml_to_html(yy):
-  yd = ordered_load(yy)
-  xx = dict_to_node(yd, None, None)
+  yd  = ordered_load(yy)
+  buf = io.BytesIO()
+  xx  = dict_to_node(yd, None, None, buf)
+  buf.write(ET.tostring(xx,encoding='utf-8'))
+  buf.seek(0)
+  return buf.read().decode()
+  # import pdb; pdb.set_trace()
+
   # xx = ET.tostring(xx,encoding='utf-8',short_empty_elements=False).decode()
   xx = ET.tostring(xx,encoding='utf-8').decode()
   return xx
@@ -162,26 +252,38 @@ def main():
   import argparse
   import sys,os
   parser = argparse.ArgumentParser()
+  parser.add_argument('--pdb',action='store_true',default=0)
   parser.add_argument('-f', '--from')
   parser.add_argument('src')
   parser.add_argument('-o', '--output')
   args = parser.parse_args()
-  if args.output:
-    output = open(args.output,'w')
-  else:
-    output = sys.stdout
-  args.format = getattr(args,'from')
-  with open(args.src,'rb') as f:
-    inputBuffer = f.read().decode()
-  if args.format == 'html':
-    outputBuffer = str_html_to_yaml(inputBuffer)
-  elif args.format=='yaml':
-    outputBuffer = str_yaml_to_html(inputBuffer)
-  else:
-    assert 0,sys.argv
-  output.write(outputBuffer)
-  output.close()
-  sys.exit(0)
+
+  try:
+    if args.output:
+      output = open(args.output,'w')
+    else:
+      output = sys.stdout
+    args.format = getattr(args,'from')
+    with open(args.src,'rb') as f:
+      inputBuffer = f.read().decode()
+    if args.format == 'html':
+      outputBuffer = str_html_to_yaml(inputBuffer)
+    elif args.format=='yaml':
+      outputBuffer = str_yaml_to_html(inputBuffer)
+    else:
+      assert 0,sys.argv
+    output.write(outputBuffer)
+    output.close()
+    # sys.exit(0)
+  except Exception as e:
+    if args.pdb: 
+      import traceback; traceback.print_exc()
+      import pdb; pdb.post_mortem()
+      sys.exit(1);
+    else:
+      raise
+
+
   # test_main()
 
 
