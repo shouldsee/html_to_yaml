@@ -27,6 +27,14 @@ _#c:
 - html: T
 ```
 
+The xml equivalent being
+
+```xml
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
+```
+
+
+
 If both set to null or unspecified, then we use no DTD and assuming the document is pure XML
 without comments, whitespaces or numbered entities. 
 
@@ -42,4 +50,12 @@ public_id: null
 system_url: null
 _#c:
 - html: T
+```
+
+### Regex for Common HTML error
+
+```
+&([^ag]) -> &amp;
+
+</br> <br> -> <br/>
 ```
